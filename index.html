@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salcomp Carousel TECH Shift Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .header-item {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        input[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+
+        .error-message {
+            color: red;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            color: green;
+            text-align: center;
+            display: none;
+        }
+
+        /* Historical Data Table Styling */
+        #historicalData {
+            margin-top: 30px;
+            display: none;
+        }
+
+        #historyTable th, #historyTable td {
+            font-size: 12px; /* Smaller font for large historical table */
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Salcomp</h1>
+    <h2>Carousel TECH Shift Report</h2>
+
+    <form id="shiftReportForm">
+        <div class="header-info">
+            <div class="header-item">
+                <label for="Date">Date:</label>
+                <input type="date" id="Date" name="Date" required>
+            </div>
+            <div class="header-item">
+                <label for="Shift">Shift:</label>
+                <select id="Shift" name="Shift" required>
+                    <option value="">Select...</option>
+                    <option value="1st">1st</option>
+                    <option value="2nd">2nd</option>
+                    <option value="3rd">3rd</option>
+                </select>
+            </div>
+            <div class="header-item">
+                <label for="Line">Line:</label>
+                <input type="text" id="Line" name="Line">
+            </div>
+            <div class="header-item">
+                <label for="Machine">Machine:</label>
+                <input type="text" id="Machine" name="Machine">
+            </div>
+        </div>
+
+        <div class="header-info">
+            <div class="header-item">
+                <label for="RunningModel">Running model:</label>
+                <input type="text" id="RunningModel" name="RunningModel">
+            </div>
+            <div class="header-item">
+                <label for="ChangeOver">Change over:</label>
+                <select id="ChangeOver" name="ChangeOver">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="header-item">
+                <label for="Model">Model:</label>
+                <input type="text" id="Model" name="Model">
+            </div>
+        </div>
+
+        <h3>Hr By Hr Production (Qty) / FT production (Qty)</h3>
+        <table>
+            <tr>
+                <th>1 Hr</th>
+                <th>2 Hr</th>
+                <th>3 Hr</th>
+                <th>4 Hr</th>
+                <th>5 Hr</th>
+                <th>6 Hr</th>
+                <th>7 Hr</th>
+                <th>8 Hr</th>
+                <th>Total</th>
+            </tr>
+            <tr>
+                <td><input type="number" name="Hr_Production_1" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_2" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_3" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_4" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_5" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_6" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_7" class="prod-input"></td>
+                <td><input type="number" name="Hr_Production_8" class="prod-input"></td>
+                <td><input type="number" id="Hr_Production_Total" name="Hr_Production_Qty_Total" readonly></td>
+            </tr>
+        </table>
+
+        <h3>Down time (in mins) If no Wip Write NW / # Hours Over Target</h3>
+        <table>
+            <tr>
+                <th>1 Hr</th>
+                <th>2 Hr</th>
+                <th>3 Hr</th>
+                <th>4 Hr</th>
+                <th>5 Hr</th>
+                <th>6 Hr</th>
+                <th>7 Hr</th>
+                <th>8 Hr</th>
+                <th>Total</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="Down_Time_1" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_2" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_3" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_4" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_5" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_6" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_7" class="downtime-input"></td>
+                <td><input type="text" name="Down_Time_8" class="downtime-input"></td>
+                <td><input type="number" id="Down_Time_Total" name="Downtime_Total" readonly></td>
+            </tr>
+        </table>
+
+        <h3>Wip Qty (Trolley ct)</h3>
+        <table>
+            <tr>
+                <th>At starting</th>
+                <th>At end</th>
+            </tr>
+            <tr>
+                <td><input type="number" name="Wip_Starting"></td>
+                <td><input type="number" name="Wip_End"></td>
+            </tr>
+        </table>
+
+        <h3>Scrap Qty</h3>
+        <table>
+            <tr>
+                <th>Base</th>
+                <th>Lid</th>
+                <th>Ac/Dc spreader</th>
+                <th>Unit</th>
+            </tr>
+            <tr>
+                <td><input type="number" name="Scrap_Qty_Base"></td>
+                <td><input type="number" name="Scrap_Qty_Lid"></td>
+                <td><input type="number" name="Scrap_Qty_AcDc"></td>
+                <td><input type="number" name="Scrap_Qty_Unit"></td>
+            </tr>
+        </table>
+
+        <h3>Is any Change over (Yes or No)</h3>
+        <table>
+            <tr>
+                <th>TIM A</th>
+                <th>TIM B</th>
+                <th>Pv 804<br>Main/Standby</th>
+                <th>BH</th>
+            </tr>
+            <tr>
+                <td><select name="Change_TIM_A"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_TIM_B"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_PV_804"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_BH_1"><option>Yes</option><option selected>No</option></select></td>
+            </tr>
+            <tr>
+                <th>MainL</th>
+                <th>1D label</th>
+                <th>1D ribbon</th>
+                <th>BH</th>
+            </tr>
+            <tr>
+                <td><select name="Change_MainL"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_1D_label"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_1D_ribbon"><option>Yes</option><option selected>No</option></select></td>
+                <td><select name="Change_BH_2"><option>Yes</option><option selected>No</option></select></td>
+            </tr>
+        </table>
+
+        <h3>5S Previous shifts (Yes or No)</h3>
+        <table>
+            <tr>
+                <td><label for="NG_parts_Found">NG parts Found on line</label></td>
+                <td><select name="NG_parts_Found"><option>Yes</option><option>No</option></select></td>
+                <td><label for="Main_label_trash">Main label trash</label></td>
+                <td><select name="Main_label_trash"><option>Yes</option><option>No</option></select></td>
+            </tr>
+            <tr>
+                <td><label for="Spillage_of_glue">Spillage of glue</label></td>
+                <td><select name="Spillage_of_glue"><option>Yes</option><option>No</option></select></td>
+                <td><label for="Parts_inside_machine">Parts inside machine</label></td>
+                <td><select name="Parts_inside_machine"><option>Yes</option><option>No</option></select></td>
+            </tr>
+        </table>
+
+        <h3>NG parts sections (Qty)</h3>
+        <table>
+            <tr>
+                <th>Section</th>
+                <th>MainL</th>
+                <th>1D label</th>
+                <th>MES</th>
+                <th>Other</th>
+            </tr>
+            <tr>
+                <td><strong>Left by previous shifts</strong></td>
+                <td><input type="number" name="NG_Prev_MainL"></td>
+                <td><input type="number" name="NG_Prev_1D_Label"></td>
+                <td><input type="number" name="NG_Prev_MES"></td>
+                <td><input type="text" name="NG_Prev_Other"></td>
+            </tr>
+            <tr>
+                <td><strong>Left this shift</strong></td>
+                <td><input type="number" name="NG_This_MainL"></td>
+                <td><input type="number" name="NG_This_1D_Label"></td>
+                <td><input type="number" name="NG_This_MES"></td>
+                <td><input type="text" name="NG_This_Other"></td>
+            </tr>
+        </table>
+
+        <h3>Major downtime &gt;20mins* (only machine DT)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Downtime (min)</th>
+                    <th>Problem</th>
+                    <th>Action taken</th>
+                </tr>
+            </thead>
+            <tbody id="downtimeTableBody">
+                <tr>
+                    <td><input type="time" name="Major_Downtime_From_1"></td>
+                    <td><input type="time" name="Major_Downtime_To_1"></td>
+                    <td><input type="number" name="Major_Downtime_Downtime_1"></td>
+                    <td><textarea name="Major_Downtime_Problem_1" rows="2"></textarea></td>
+                    <td><textarea name="Major_Downtime_Action_1" rows="2"></textarea></td>
+                </tr>
+                <tr>
+                    <td><input type="time" name="Major_Downtime_From_2"></td>
+                    <td><input type="time" name="Major_Downtime_To_2"></td>
+                    <td><input type="number" name="Major_Downtime_Downtime_2"></td>
+                    <td><textarea name="Major_Downtime_Problem_2" rows="2"></textarea></td>
+                    <td><textarea name="Major_Downtime_Action_2" rows="2"></textarea></td>
+                </tr>
+                <tr>
+                    <td><input type="time" name="Major_Downtime_From_3"></td>
+                    <td><input type="time" name="Major_Downtime_To_3"></td>
+                    <td><input type="number" name="Major_Downtime_Downtime_3"></td>
+                    <td><textarea name="Major_Downtime_Problem_3" rows="2"></textarea></td>
+                    <td><textarea name="Major_Downtime_Action_3" rows="2"></textarea></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="header-info" style="margin-top:20px;">
+            <div class="header-item">
+                <label for="TechName">Tech Name:</label>
+                <input type="text" id="TechName" name="Tech_Name" required>
+            </div>
+            <div class="header-item">
+                <label for="Signature">Signature:</label>
+                <input type="text" id="Signature" name="Signature" placeholder="Type name to sign">
+            </div>
+        </div>
+
+        <input type="submit" value="Submit Report">
+        <p class="error-message" id="errorMessage">There was an error submitting the report.</p>
+        <p class="success-message" id="successMessage">Report submitted successfully!</p>
+    </form>
+
+    <div style="text-align:center; margin-top: 30px;">
+        <button id="showHistoryBtn">View Historical Data</button>
+    </div>
+
+    <div id="historicalData">
+        <h3>Historical Shift Reports</h3>
+        <table id="historyTable">
+            <thead>
+                <tr id="historyTableHeader">
+                    </tr>
+            </thead>
+            <tbody id="historyTableBody">
+                </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUCmZMghKZM4H8uT00fTq5rqKH7CfATAGJ5Ya2Tk1ejDAj4ChUc0lmrYZ00N6oNp6a/exec'; // *** REPLACE THIS ***
+
+    const form = document.getElementById('shiftReportForm');
+    const prodInputs = document.querySelectorAll('.prod-input');
+    const downtimeInputs = document.querySelectorAll('.downtime-input');
+
+    // Automatically calculate totals
+    const calculateTotal = (inputs, totalOutputId) => {
+        let total = 0;
+        inputs.forEach(input => {
+            let val = parseInt(input.value);
+            if (!isNaN(val)) total += val;
+        });
+        document.getElementById(totalOutputId).value = total;
+    };
+
+    prodInputs.forEach(input => {
+        input.addEventListener('input', () => calculateTotal(prodInputs, 'Hr_Production_Total'));
+    });
+
+    downtimeInputs.forEach(input => {
+        input.addEventListener('input', () => calculateTotal(downtimeInputs, 'Down_Time_Total'));
+    });
+
+    // Form submission handling
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'none';
+
+        // Convert form data to a flat JSON object
+        const formData = new FormData(form);
+        const formObject = {};
+        formData.forEach((value, key) => {
+            formObject[key] = value;
+        });
+
+        // Use 'no-cors' mode to avoid CORS issues for simple submissions
+        // However, 'no-cors' doesn't allow you to read the response.
+        // We will use standard 'cors' for this implementation, but Google Apps Script handles this correctly.
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Changed to no-cors
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject)
+        })
+        .then(response => {
+            // With 'no-cors', you won't get a readable response body, 
+            // so we assume success if the request doesn't throw an error.
+            document.getElementById('successMessage').style.display = 'block';
+            form.reset();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('errorMessage').style.display = 'block';
+        });
+    });
+
+    // Historical Data Loading
+    const showHistoryBtn = document.getElementById('showHistoryBtn');
+    const historicalDataDiv = document.getElementById('historicalData');
+    const historyTableHeader = document.getElementById('historyTableHeader');
+    const historyTableBody = document.getElementById('historyTableBody');
+
+    showHistoryBtn.addEventListener('click', () => {
+        if (historicalDataDiv.style.display === 'block') {
+            historicalDataDiv.style.display = 'none';
+            showHistoryBtn.innerText = 'View Historical Data';
+            return;
+        }
+
+        historyTableHeader.innerHTML = ''; // Clear previous
+        historyTableBody.innerHTML = '<tr><td colspan="100%">Loading...</td></tr>';
+        historicalDataDiv.style.display = 'block';
+        showHistoryBtn.innerText = 'Hide Historical Data';
+
+        // Fetch data from the Google Script (GET request)
+        fetch(SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+            historyTableBody.innerHTML = ''; // Clear loading message
+
+            if (data.length === 0) {
+                historyTableBody.innerHTML = '<tr><td colspan="100%">No historical data found.</td></tr>';
+                return;
+            }
+
+            // 1. Generate Headers
+            const headers = Object.keys(data[0]);
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                historyTableHeader.appendChild(th);
+            });
+
+            // 2. Populate Rows
+            data.forEach(record => {
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = record[header];
+                    tr.appendChild(td);
+                });
+                historyTableBody.appendChild(tr);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching history:', error);
+            historyTableBody.innerHTML = '<tr><td colspan="100%" style="color:red">Error loading history data.</td></tr>';
+        });
+    });
+
+</script>
+
+</body>
+</html>
